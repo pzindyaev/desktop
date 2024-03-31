@@ -1,0 +1,5 @@
+[global]
+follow = mouse
+origin = top-center
+font = Monospace 12
+dmenu = wofi --show dmenu -p dunst

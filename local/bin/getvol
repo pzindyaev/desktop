@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+vol_pipe="/tmp/volume_pipe"
+vol=$(bc <<< "scale=2; $(wpctl get-volume @DEFAULT_SINK@ | awk '{print $2}') * 100")
+
+if [[ "${1}" == "print" ]]; then
+        echo "${vol}"
+        exit 0
+fi
+
+if [ ! -e /tmp/volume_pipe ]; then
+        mkfifo "${vol_pipe}"
+fi
+
+echo "${vol} > "${vol_pipe}"

@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+pipe_path="${HOME}/.local/tmp/activewindow.pipe"
+
+function handle {
+        if [[ "${1:0:14}" == "activewindowv2" ]]; then
+                echo "$(hyprctl activewindow -j | tr -d '\n')" > "${pipe_path}"
+        fi
+}
+
+if [[ ! -e "${pipe_path}" ]]; then
+        mkfifo "${pipe_path}"
+fi
+
+echo "$(hyprctl activewindow -j | tr -d '\n')" > "${pipe_path}"
+
+socat - "UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do handle "$line"; done

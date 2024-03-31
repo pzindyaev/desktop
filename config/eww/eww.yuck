@@ -1,0 +1,67 @@
+(defwidget _clock []
+        (box :halign "end"
+                (tooltip
+                        (calendar)
+                        (label :text "${formattime(EWW_TIME, "%H:%M %b %d, %Y ")}" :active true)
+                )
+        )
+)
+
+(defwidget metric [value label onchange]
+        (box :orientation "h" :class "metric" :space-evenly false
+                (box :class "label" label)
+                (scale :min 0 :max 100 :round-digits 2 :active {onchange != ""} :value value :onchange onchange)
+        )
+)
+
+(deflisten volume :initial 50
+        "tail -F $HOME/.local/tmp/volume.pipe"
+)
+(defwidget _audio []
+        (box :orientation "h" :halign "end" :space-evenly false
+                (metric :label "🔊" :value volume :onchange "setvol {}%")
+        )
+)
+
+(deflisten music :initial ""
+        "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true"
+)
+(defwidget _music []
+        (box :class "music"
+                :orientation "h"
+                :space-evenly false
+                :halign "center"
+                {music != "" ? "🎵${music}" : ""})
+)
+
+(deflisten activewindow :initial '{"xwayland":false,"title":""}'
+        "tail -F $HOME/.local/tmp/activewindow.pipe"
+)
+(defwidget _activewindow []
+        (box :class "activewindow"
+                (label :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
+        )
+)
+(defwidget _systray []
+        (box :orientation "h"
+                (systray :spacing 5 :space-evenly true :prepend-new true)
+        )
+)
+
+(defwindow bar
+        :monitor 0
+        :stacking "fg"
+        :exclusive true
+        :geometry (geometry :width "100%" :anchor "top center")
+        (box
+                (box :halign "start"
+                )
+                (box
+                        (_activewindow)
+                )
+                (box :halign "end"
+                        (_audio)
+                        (_clock)
+                )
+        )
+)

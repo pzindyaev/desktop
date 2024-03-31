@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+volume_pipe="${HOME}/.local/tmp/volume.pipe"
+
+if [[ ! -e "${volume_pipe}" ]]; then
+        mkfifo "${volume_pipe}"
+fi
+
+if wpctl set-volume @DEFAULT_SINK@ "${1}"; then
+        bc <<< "scale=2; $(wpctl get-volume @DEFAULT_SINK@ | awk '{print $2}') * 100" > "${volume_pipe}"
+fi
