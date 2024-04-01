@@ -6,6 +6,9 @@ This is a collection of my desktop configs for Hyprland, Eww, wireplumber, Neovi
 
 - socat
 - bc
+- swaylock
+- mc
+- polkit-kde-agent-6
 
 ## Installation
 
