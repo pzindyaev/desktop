@@ -12,4 +12,4 @@ if [ ! -e "${volume_pipe}" ]; then
         mkfifo "${volume_pipe}"
 fi
 
-echo "${vol} > "${volume_pipe}"
+echo "${vol}" > "${volume_pipe}"
