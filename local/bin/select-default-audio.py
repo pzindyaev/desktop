@@ -20,7 +20,7 @@ def main(args):
         elif opt in ("-o", "--output"):
             media_class = "Audio/Sink"
         elif opt in ("-c", "--camera"):
-            media_class = "Audio/Source"
+            media_class = "Video/Source"
         elif opt in ("-h", "--help"):
             print(f'''Usage: python3 {args[0]} [argument]
 list of arguments:
