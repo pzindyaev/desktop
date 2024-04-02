@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 
 volume_pipe="${HOME}/.local/tmp/volume.pipe"
+mic_pipe="${HOME}/.local/tmp/mic.pipe"
 
-if [[ ! -e "${volume_pipe}" ]]; then
-        mkfifo "${volume_pipe}"
-fi
-
-if wpctl set-volume @DEFAULT_SINK@ "${1}"; then
-        bc <<< "scale=2; $(wpctl get-volume @DEFAULT_SINK@ | awk '{print $2}') * 100" > "${volume_pipe}"
+if [[ "${1}" == "sink" ]]; then
+        if [[ ! -e "${volume_pipe}" ]]; then
+                mkfifo "${volume_pipe}"
+        fi
+        if wpctl set-volume @DEFAULT_AUDIO_SINK@ "${2}"; then
+                bc <<< "scale=2; $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" > "${volume_pipe}"
+        fi
+elif [[ "${1}" == "source" ]]; then
+        if [[ ! -e "${mic_pipe}" ]]; then
+                mkfifo "${mic_pipe}"
+        fi
+        if wpctl set-volume @DEFAULT_AUDIO_SOURCE@ "${2}"; then
+                bc <<< "scale=2; $(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | awk '{print $2}') * 100" > "${mic_pipe}"
+        fi
 fi

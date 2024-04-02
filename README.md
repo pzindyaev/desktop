@@ -1,6 +1,6 @@
 # Desktop Configs
 
-This is a collection of my desktop configs for Hyprland, Eww, wireplumber, Neovim, Dunst
+Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst
 
 ## Requirements
 
@@ -9,6 +9,7 @@ This is a collection of my desktop configs for Hyprland, Eww, wireplumber, Neovi
 - swaylock
 - mc
 - polkit-kde-agent-6
+- python 3
 
 ## Installation
 

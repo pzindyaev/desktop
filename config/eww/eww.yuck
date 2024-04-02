@@ -19,7 +19,15 @@
 )
 (defwidget _sink []
         (box :orientation "h" :halign "end" :space-evenly false
-                (metric :label "🔊" :value volume :onchange "setvol {}%")
+                (metric :label "🔊" :value volume :onchange "setvol sink {}%")
+        )
+)
+(deflisten mic_vol :initial 80
+        "tail -F $HOME/.local/tmp/mic.pipe"
+)
+(defwidget _mic []
+        (box :orientaion "h" :halign "end" :space-evenly false
+                (metric :label "🎙" :value mic_vol :onchange "setvol source {}%")
         )
 )
 
@@ -49,6 +57,7 @@
 )
 
 (defwindow bar
+        :class "bar"
         :monitor 0
         :stacking "fg"
         :exclusive true
@@ -60,6 +69,7 @@
                         (_activewindow)
                 )
                 (box :halign "end"
+                        (_mic)
                         (_sink)
                         (_clock)
                 )
