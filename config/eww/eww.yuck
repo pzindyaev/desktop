@@ -17,7 +17,7 @@
 (deflisten volume :initial 50
         "tail -F $HOME/.local/tmp/volume.pipe"
 )
-(defwidget _audio []
+(defwidget _sink []
         (box :orientation "h" :halign "end" :space-evenly false
                 (metric :label "🔊" :value volume :onchange "setvol {}%")
         )
@@ -60,7 +60,7 @@
                         (_activewindow)
                 )
                 (box :halign "end"
-                        (_audio)
+                        (_sink)
                         (_clock)
                 )
         )

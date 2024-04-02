@@ -8,7 +8,7 @@ import getopt
 def main(args):
     # Parse command line arguments
     try:
-        opts, _ = getopt.getopt(args[1:], "hio", ["help", "input", "output"])
+        opts, _ = getopt.getopt(args[1:], "hico", ["help", "input", "output", "camera"])
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
@@ -19,11 +19,14 @@ def main(args):
             media_class = "Audio/Source"
         elif opt in ("-o", "--output"):
             media_class = "Audio/Sink"
+        elif opt in ("-c", "--camera"):
+            media_class = "Audio/Source"
         elif opt in ("-h", "--help"):
             print(f'''Usage: python3 {args[0]} [argument]
 list of arguments:
     -i | --input : Set the default input
     -o | --output : Ser the default output
+    -c | --camera : Set the default camera
     -h : Display this help''')
             sys.exit()
 
