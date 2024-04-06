@@ -18,7 +18,7 @@
         "tail -F $HOME/.local/tmp/volume.pipe"
 )
 (defwidget _sink []
-        (box :orientation "h" :halign "end" :space-evenly false
+        (box :class "sink" :orientation "h" :halign "end" :space-evenly false
                 (metric :label "🔊" :value volume :onchange "setvol sink {}%")
         )
 )
@@ -26,7 +26,7 @@
         "tail -F $HOME/.local/tmp/mic.pipe"
 )
 (defwidget _mic []
-        (box :orientaion "h" :halign "end" :space-evenly false
+        (box :class "mic" :orientation "h" :halign "end" :space-evenly false
                 (metric :label "🎙" :value mic_vol :onchange "setvol source {}%")
         )
 )
@@ -47,23 +47,39 @@
 )
 (defwidget _activewindow []
         (box :class "activewindow"
-                (label :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
+                (label :limit-width 50 :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
         )
 )
+
+(deflisten activeworkspaces :initial "[]"
+        "tail -F $HOME/.local/tmp/workspaces.pipe"
+)
+(defwidget _activeworkspaces [mon]
+        (box :class "activeworkspaces" :orientation "h"
+                (for ws in activeworkspaces
+                        (button :visible {true ? "${ws.monitorID}" == "${mon}" : false}
+                                :onclick "hyprctl dispatch workspace ${ws.id}"
+                                "${ws.id}"
+                        )
+                )
+        )
+)
+
 (defwidget _systray []
         (box :orientation "h"
                 (systray :spacing 5 :space-evenly true :prepend-new true)
         )
 )
 
-(defwindow bar
+(defwindow bar [mon]
         :class "bar"
-        :monitor 0
+        :monitor mon
         :stacking "fg"
         :exclusive true
         :geometry (geometry :width "100%" :anchor "top center")
-        (box
+        (box :orientation "h"
                 (box :halign "start"
+                        (_activeworkspaces :mon mon)
                 )
                 (box
                         (_activewindow)

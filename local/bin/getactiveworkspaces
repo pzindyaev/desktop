@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+pipe_path="${HOME}/.local/tmp/workspaces.pipe"
+
+function handle {
+        if [[ "${1:0:10}" == "focusedmon" ]] || [[ "${1:0:11}" == "workspacev2" ]] || [[ "${1:0:18}" == "destroyworkspacev2" ]]; then
+                echo "$(hyprctl workspaces -j | tr -d '\n')" > "${pipe_path}"
+        fi
+}
+
+if [[ ! -e "${pipe_path}" ]]; then
+        mkfifo "${pipe_path}"
+fi
+
+echo "$(hyprctl workspaces -j | tr -d '\n')" > "${pipe_path}"
+
+socat - "UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do handle "$line"; done
