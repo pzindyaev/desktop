@@ -47,7 +47,7 @@
 )
 (defwidget _activewindow []
         (box :class "activewindow"
-                (label :limit-width 50 :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
+                (label :limit-width 80 :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
         )
 )
 
@@ -65,8 +65,12 @@
         )
 )
 
+(defwidget _battery []
+        (label :text "B: ${round(EWW_BATTERY?.total_avg, 1)}%")
+)
+
 (defwidget _systray []
-        (box :orientation "h"
+        (box :orientation "h" 
                 (systray :spacing 5 :space-evenly true :prepend-new true)
         )
 )
@@ -78,15 +82,16 @@
         :exclusive true
         :geometry (geometry :width "100%" :anchor "top center")
         (box :orientation "h"
-                (box :halign "start"
+                (box :halign "start" :space-evenly false
                         (_activeworkspaces :mon mon)
-                )
-                (box
                         (_activewindow)
                 )
-                (box :halign "end"
+                (box :halign "center" :space-evenly false
+                )
+                (box :halign "end" :space-evenly false :visible {mon == 0 ? true : false }
                         (_mic)
                         (_sink)
+                        (_battery :visible {EWW_BATTERY ? true : false})
                         (_clock)
                 )
         )
