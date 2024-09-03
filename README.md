@@ -1,6 +1,6 @@
 # Desktop Configs
 
-Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst
+Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty
 
 ## Requirements
 
@@ -10,6 +10,7 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst
 - mc
 - polkit-kde-agent-6
 - python 3
+- ripgrep
 
 ## Installation
 
