@@ -11,6 +11,7 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty
 - polkit-kde-agent-6
 - python 3
 - ripgrep
+- wofi
 
 ## Installation
 
