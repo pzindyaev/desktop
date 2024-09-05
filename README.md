@@ -1,6 +1,6 @@
 # Desktop Configs
 
-Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty
+Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty, mc
 
 ## Requirements
 
