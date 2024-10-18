@@ -6,7 +6,6 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty, mc
 
 - socat
 - bc
-- swaylock
 - mc
 - polkit-kde-agent-6
 - python 3
@@ -15,6 +14,7 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty, mc
 - hyprpaper
 - grim
 - hyprlock
+- slurp
 
 ## Installation
 
