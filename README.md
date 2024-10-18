@@ -12,6 +12,9 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty, mc
 - python 3
 - ripgrep
 - wofi
+- hyprpaper
+- grim
+- hyprlock
 
 ## Installation
 
