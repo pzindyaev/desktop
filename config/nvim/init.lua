@@ -419,7 +419,13 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open float
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- NERDTree keymaps
-vim.keymap.set('n', '<C-n>', ':NERDTreeToggle<CR>', { desc = '[E]xplore the current directory' })
+vim.keymap.set('n', '<C-n>', ':NERDTreeToggle<CR>', { desc = 'Explore the current directory' })
+
+-- REST client keymaps
+vim.keymap.set('n', '<leader>tr', ':hor Rest run<CR>', { desc = 'Rest [R]un request' })
+vim.keymap.set('n', '<leader>tl', ':hor Rest logs<CR>', { desc = 'Rest requests [l]ogs' })
+vim.keymap.set('n', '<leader>to', ':hor Rest open<CR>', { desc = '[O]pen Rest requests pane' })
+vim.keymap.set('n', '<leader>tc', ':Rest cookies<CR>', { desc = 'Open [c]ookies file' })
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
@@ -431,7 +437,7 @@ local on_attach = function(_, bufnr)
   -- In this case, we create a function that lets us more easily define mappings specific
   -- for LSP related items. It sets the mode, buffer and description for us each time.
   local nmap = function(keys, func, desc)
-    if desc then
+  if desc then
       desc = 'LSP: ' .. desc
     end
 
@@ -468,21 +474,25 @@ end
 
 -- document existing key chains
 require('which-key').add {
-    { "<leader>c", group = "[C]ode" },
-    { "<leader>c_", hidden = true },
-    { "<leader>d", group = "[D]ocument" },
-    { "<leader>d_", hidden = true },
-    { "<leader>g", group = "[G]it" },
-    { "<leader>g_", hidden = true },
-    { "<leader>h", group = "More git" },
-    { "<leader>h_", hidden = true },
-    { "<leader>r", group = "[R]ename" },
-    { "<leader>r_", hidden = true },
-    { "<leader>s", group = "[S]earch" },
-    { "<leader>s_", hidden = true },
-    { "<leader>w", group = "[W]orkspace" },
-    { "<leader>w_", hidden = true },
-  }
+  { "<leader>c", group = "[C]ode" },
+  { "<leader>c_", hidden = true },
+  { "<leader>d", group = "[D]ocument" },
+  { "<leader>d_", hidden = true },
+  { "<leader>g", group = "[G]it" },
+  { "<leader>g_", hidden = true },
+  { "<leader>h", group = "More git" },
+  { "<leader>h_", hidden = true },
+  { "<leader>r", group = "[R]ename" },
+  { "<leader>r_", hidden = true },
+  { "<leader>s", group = "[S]earch" },
+  { "<leader>s_", hidden = true },
+  { "<leader>w", group = "[W]orkspace" },
+  { "<leader>w_", hidden = true },
+  { "<leader>t", group = "Res[t]" },
+  { "<leader>t_", hidden = true },
+  { "<leader>E", group = "[E]xecute" },
+  { "<leader>E_", hidden = true },
+}
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -505,7 +515,7 @@ local servers = {
   --tsserver = {},
   html = { filetypes = { 'html', 'twig', 'hbs'} },
   --angularls = {},
-  --jdtls = {},
+  jdtls = {},
 
   lua_ls = {
     Lua = {
