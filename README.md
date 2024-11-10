@@ -15,6 +15,7 @@ Configs bundle for Hyprland, Eww, wireplumber, Neovim, Dunst, alacritty, mc
 - grim
 - hyprlock
 - slurp
+- easyeffects
 
 ## Installation
 
