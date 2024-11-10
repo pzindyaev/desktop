@@ -7,9 +7,11 @@
         )
 )
 
-(defwidget metric [value label onchange]
+(defwidget metric [value label onchange onclick]
         (box :orientation "h" :class "metric" :space-evenly false
-                (box :class "label" label)
+                (eventbox :onclick onclick :timeout "10s"
+                        (box :class "label" label)
+                )
                 (scale :min 0 :max 100 :round-digits 2 :active {onchange != ""} :value value :onchange onchange)
         )
 )
@@ -19,7 +21,7 @@
 )
 (defwidget _sink []
         (box :class "sink" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "🔊" :value volume :onchange "setvol sink {}%")
+                (metric :label "🔊" :value volume :onchange "setvol sink {}%" :onclick "easyeffects")
         )
 )
 (deflisten mic_vol :initial 80
@@ -27,7 +29,7 @@
 )
 (defwidget _mic []
         (box :class "mic" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "🎙" :value mic_vol :onchange "setvol source {}%")
+                (metric :label "🎙" :value mic_vol :onchange "setvol source {}%" :onclick "easyeffects")
         )
 )
 
@@ -66,7 +68,7 @@
 )
 
 (defwidget _battery []
-        (label :text "B: ${round(EWW_BATTERY?.total_avg, 1)}%")
+        (label :text "B: ${EWW_BATTERY != `` ? round(EWW_BATTERY?.total_avg, 1) : ""}%")
 )
 
 (defwidget _systray []
@@ -80,7 +82,7 @@
         :monitor mon
         :stacking "fg"
         :exclusive true
-        :geometry (geometry :width "100%" :anchor "top center")
+        :geometry (geometry :width "1440px" :anchor "top center")
         (box :orientation "h"
                 (box :halign "start" :space-evenly false
                         (_activeworkspaces :mon mon)
@@ -91,8 +93,8 @@
                 (box :halign "end" :space-evenly false :visible {mon == 0 ? true : false }
                         (_mic)
                         (_sink)
-                        (_battery :visible {EWW_BATTERY ? true : false})
                         (_clock)
+                        (_systray)
                 )
         )
 )
