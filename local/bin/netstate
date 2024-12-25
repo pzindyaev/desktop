@@ -1,0 +1,15 @@
+#!/bin/bash
+
+output="["
+for n in /sys/class/net/*; do
+        name=$(basename "${n}")
+        if [[ "${name}" == "lo" ]]; then
+                continue
+        fi
+        speed=$(cat "${n}"/speed)
+        state=$(cat "${n}"/operstate)
+        output="${output}{\"name\":\"${name}\",\"speed\":\"${speed}\",\"state\":\"${state}\"},"
+done
+output="${output%?}]"
+echo ${output}
+

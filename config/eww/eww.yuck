@@ -77,20 +77,38 @@
         )
 )
 
+(defpoll netstate :interval "5s"
+        "netstate"
+)
+(defwidget _netstate []
+        (box :class "netstate" :orientation "h"
+                (tooltip
+                        (box :orientation "v"
+                                (for n in netstate
+                                        (label :text "${n.name}: ${n.state} ${n.speed}Mb/s")
+                                )
+                        )
+                        (label :text "🖧")
+                )
+        )
+)
+
 (defwindow bar [mon]
         :class "bar"
         :monitor mon
         :stacking "fg"
         :exclusive true
-        :geometry (geometry :width "1440px" :anchor "top center")
+        :geometry (geometry :width {mon == 0 ? "100%" : "1440px" } :anchor "top center")
         (box :orientation "h"
                 (box :halign "start" :space-evenly false
                         (_activeworkspaces :mon mon)
                         (_activewindow)
                 )
-                (box :halign "center" :space-evenly false
+                (box :halign "center" :space-evenly false :visible {mon == 0 ? true : false }
+                        (_music)
                 )
                 (box :halign "end" :space-evenly false :visible {mon == 0 ? true : false }
+                        (_netstate)
                         (_mic)
                         (_sink)
                         (_clock)
