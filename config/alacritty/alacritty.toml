@@ -1,8 +1,10 @@
+[font.normal]
+family = "FiraCode Nerd Font Mono"
+style = "Medium"
+
+[general]
 import = [
         "~/.config/alacritty/catppuccin-mocha.toml",
 ]
-[font.normal]
-family = "JetBrainsMono"
-style = "Regular"
 
 
