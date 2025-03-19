@@ -21,7 +21,7 @@
 )
 (defwidget _sink []
         (box :class "sink" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "🔊" :value volume :onchange "setvol sink {}%" :onclick "easyeffects")
+                (metric :label "󰕾 " :value volume :onchange "setvol sink {}%" :onclick "easyeffects")
         )
 )
 (deflisten mic_vol :initial 80
@@ -29,7 +29,7 @@
 )
 (defwidget _mic []
         (box :class "mic" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "🎙" :value mic_vol :onchange "setvol source {}%" :onclick "easyeffects")
+                (metric :label "󰍬 " :value mic_vol :onchange "setvol source {}%" :onclick "easyeffects")
         )
 )
 
@@ -68,7 +68,9 @@
 )
 
 (defwidget _battery []
-        (label :text "B: ${EWW_BATTERY != `` ? round(EWW_BATTERY?.total_avg, 1) : ""}%")
+        (box :orientation "h"
+                (label :text "   ${EWW_BATTERY != `` ? round(EWW_BATTERY?.total_avg, 1) : ""}%")
+        )
 )
 
 (defwidget _systray []
@@ -88,7 +90,7 @@
                                         (label :text "${n.name}: ${n.state} ${n.speed}Mb/s")
                                 )
                         )
-                        (label :text "🖧")
+                        (label :text "󰈀")
                 )
         )
 )
@@ -108,6 +110,7 @@
                         (_music)
                 )
                 (box :halign "end" :space-evenly false :visible {mon == 0 ? true : false }
+                        (_battery)
                         (_netstate)
                         (_mic)
                         (_sink)
