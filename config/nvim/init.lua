@@ -528,6 +528,24 @@ local servers = {
 -- Setup neovim lua configuration
 require('neodev').setup()
 
+-- Setup tabnine
+require('tabnine').setup({
+  disable_auto_comment=true,
+  accept_keymap="<A-Tab>",
+  dismiss_keymap = "<C-]>",
+  debounce_ms = 800,
+  suggestion_color = {gui = "#808080", cterm = 244},
+  exclude_filetypes = {"TelescopePrompt", "NvimTree"},
+  log_file_path = nil, -- absolute path to Tabnine log file
+  ignore_certificate_errors = false,
+  -- workspace_folders = {
+  --   paths = { "/your/project" },
+  --   get_paths = function()
+  --       return { "/your/project" }
+  --   end,
+  -- },
+})
+
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
