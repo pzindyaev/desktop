@@ -7,14 +7,14 @@ if [[ "${1}" == "sink" ]]; then
         if [[ ! -e "${volume_pipe}" ]]; then
                 mkfifo "${volume_pipe}"
         fi
-        if wpctl set-volume @DEFAULT_AUDIO_SINK@ "${2}"; then
+        if wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "${2}"; then
                 bc <<< "scale=2; $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" > "${volume_pipe}"
         fi
 elif [[ "${1}" == "source" ]]; then
         if [[ ! -e "${mic_pipe}" ]]; then
                 mkfifo "${mic_pipe}"
         fi
-        if wpctl set-volume @DEFAULT_AUDIO_SOURCE@ "${2}"; then
+        if wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SOURCE@ "${2}"; then
                 bc <<< "scale=2; $(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | awk '{print $2}') * 100" > "${mic_pipe}"
         fi
 fi
