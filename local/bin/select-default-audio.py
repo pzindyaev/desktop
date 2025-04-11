@@ -30,7 +30,7 @@ list of arguments:
     -h : Display this help''')
             sys.exit()
 
-    # Run pw-dump to get the sinks
+    # Run pw-dump to get the devices
     try:
         pw_proccess = subprocess.run(["pw-dump"], check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
@@ -38,24 +38,27 @@ list of arguments:
         sys.exit(e.returncode)
 
     # Parse json output of the pw-dump
-    sinks = ""
+    pw_devices = ""
     pw_data = json.loads(pw_proccess.stdout)
     for item in pw_data:
-        if item['type'] == "PipeWire:Interface:Node": 
-            if 'info' in item and 'props' in item['info'] and 'media.class' in item['info']['props']:
-                if item['info']['props']['media.class'] == media_class:
-                    sinks += f"{item['id']}:{item['info']['props']['node.description']}\n" 
+        if item['type'] == "PipeWire:Interface:Node" \
+            and 'info' in item \
+            and 'props' in item['info'] \
+            and 'media.class' in item['info']['props'] \
+            and item['info']['props']['media.class'] == media_class: 
 
-    # Run wofi to select the sink
+            pw_devices += f"{item['id']}:{item['info']['props']['node.description']}\n" 
+
+    # Run wofi to select the device
     try:
-        wofi_proccess = subprocess.run(["wofi", "--show=dmenu"], check=True, text=True, input=sinks, capture_output=True)
+        wofi_proccess = subprocess.run(["wofi", "--show=dmenu"], check=True, text=True, input=pw_devices, capture_output=True)
     except subprocess.CalledProcessError as e:
         sys.exit(e.returncode)
 
-    # Set selected sink as the default sink
-    sink_split = wofi_proccess.stdout.split(":")
+    # Set selected device as the default
+    wofi_selected_device = wofi_proccess.stdout.split(":")
     try:
-        subprocess.run(["wpctl", "set-default", f"{sink_split[0]}"])
+        subprocess.run(["wpctl", "set-default", f"{wofi_selected_device[0]}"])
     except subprocess.CalledProcessError as e:
         sys.exit(e.returncode)
 
