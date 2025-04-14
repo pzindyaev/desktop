@@ -337,7 +337,7 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
 
-vim.keymap.set('n', '<leader><S-e>t', 'yy:term <C-r>"<CR>', { desc = '[E]execute the line in the [T]erminal' })
+vim.keymap.set('n', '<leader><S-e>t', 'yy:term <C-r>"<CR>', { desc = '[E]xecute the line in the [T]erminal' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -420,12 +420,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- NERDTree keymaps
 vim.keymap.set('n', '<C-n>', ':NERDTreeToggle<CR>', { desc = 'Explore the current directory' })
-
--- REST client keymaps
-vim.keymap.set('n', '<leader>tr', ':hor Rest run<CR>', { desc = 'Rest [R]un request' })
-vim.keymap.set('n', '<leader>tl', ':hor Rest logs<CR>', { desc = 'Rest requests [l]ogs' })
-vim.keymap.set('n', '<leader>to', ':hor Rest open<CR>', { desc = '[O]pen Rest requests pane' })
-vim.keymap.set('n', '<leader>tc', ':Rest cookies<CR>', { desc = 'Open [c]ookies file' })
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
