@@ -29,3 +29,36 @@
                 }
         }
 }
+
+.power-main-button {
+        font-size: 24px;
+        padding: 0 10px;
+}
+
+.power-menu {
+        background: #2f343f;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #4c566a;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.power-button {
+        margin: 5px 0;
+        padding: 8px 15px;
+        border-radius: 4px;
+        background: #434c5e;
+        min-width: 180px;
+}
+
+.power-button:first-child {
+        color: #bf616a;
+}
+
+.power-button:last-child {
+        color: #ebcb8b;
+}
+
+.power-button:hover {
+        background: #4c566a;
+}

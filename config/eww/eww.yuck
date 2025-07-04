@@ -41,7 +41,8 @@
                 :orientation "h"
                 :space-evenly false
                 :halign "center"
-                {music != "" ? "🎵${music}" : ""})
+                (label :limit-width 50 :text {music != "" ? "󰎇 ${music}" : ""})
+        )
 )
 
 (deflisten activewindow :initial '{"xwayland":false,"title":""}'
@@ -49,7 +50,7 @@
 )
 (defwidget _activewindow []
         (box :class "activewindow"
-                (label :limit-width 80 :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
+                (label :limit-width 50 :text "${activewindow.xwayland ? 'X: ' : ''}${activewindow.title}")
         )
 )
 
@@ -79,7 +80,7 @@
         )
 )
 
-(defpoll netstate :interval "5s"
+(defpoll netstate :interval "5s" :initial "{}"
         "netstate"
 )
 (defwidget _netstate []
@@ -95,12 +96,31 @@
         )
 )
 
+(defvar power-menu-visible false)
+
+(defwidget power-menu []
+        (box :orientation "v" :class "power-menu" :visible power-menu-visible
+                (button :onclick "systemctl poweroff" :class "power-button" "󰐥 Shutdown")
+                (button :onclick "systemctl reboot" :class "power-button" "󰜉 Reboot")
+        )
+)
+(defwidget _power-button []
+        (button :onclick {power-menu-visible ? "${EWW_CMD} close power-menu-window && ${EWW_CMD} update power-menu-visible=false" : "${EWW_CMD} open power-menu-window && ${EWW_CMD} update power-menu-visible=true"} :class "power-main-button" "󰐥")
+)
+(defwindow power-menu-window []
+        :monitor 0
+        :geometry (geometry :width "200px" :height "100px" :anchor "top right")
+        :stacking "fg"
+
+        (power-menu)
+)
+
 (defwindow bar [mon]
         :class "bar"
         :monitor mon
         :stacking "fg"
         :exclusive true
-        :geometry (geometry :width {mon == 0 ? "100%" : "1440px" } :anchor "top center")
+        :geometry (geometry :width "100%" :anchor "top center")
         (box :orientation "h"
                 (box :halign "start" :space-evenly false
                         (_activeworkspaces :mon mon)
@@ -116,6 +136,7 @@
                         (_sink)
                         (_clock)
                         (_systray)
+                        (_power-button)
                 )
         )
 )
