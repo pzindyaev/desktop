@@ -593,6 +593,13 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 
 vim.keymap.set('n', '<leader><S-e>t', 'yy:term <C-r>"<CR>', { desc = '[E]xecute the line in the [T]erminal' })
 
+vim.keymap.set('n', '<leader><S-t>n', ':tabnew<CR>', { desc = '[T]ab [N]ew' })
+vim.keymap.set('n', '<leader><S-t>c', ':tabclose<CR>', { desc = '[T]ab [C]lose' })
+vim.keymap.set('n', '<leader><S-t>h', ':tabprevious<CR>', { desc = '[T]ab Previous' })
+vim.keymap.set('n', '<leader><S-t>l', ':tabnext<CR>', { desc = '[T]ab Next' })
+
+-- [[ Configure Autoformat ]]
+
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 -- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
