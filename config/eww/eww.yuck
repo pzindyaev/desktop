@@ -19,17 +19,63 @@
 (deflisten volume :initial 50
         "tail -F $HOME/.local/tmp/volume.pipe"
 )
+(defpoll pwsinks :interval "5s" :initial "[]"
+        "pwdevices sink"
+)
+(defvar sink-menu-visible false)
+(defwidget sink-menu []
+        (box :orientation "v" :class "audio-menu" :visible sink-menu-visible
+                (for dev in pwsinks
+                        (button
+                                :onclick "wpctl set-default ${dev.id}"
+                                :class {dev.default ? "audio-device audio-device-default" : "audio-device"}
+                                "󰕾 ${dev.name}"
+                        )
+                )
+        )
+)
+(defwindow sink-menu-window []
+        :monitor 0
+        :geometry (geometry :width "300px" :anchor "top right")
+        :stacking "fg"
+
+        (sink-menu)
+)
 (defwidget _sink []
         (box :class "sink" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "󰕾 " :value volume :onchange "setvol sink {}%" :onclick "easyeffects")
+                (metric :label "󰕾 " :value volume :onchange "setvol sink {}%"
+                        :onclick {sink-menu-visible ? "${EWW_CMD} close sink-menu-window && ${EWW_CMD} update sink-menu-visible=false" : "${EWW_CMD} open sink-menu-window && ${EWW_CMD} update sink-menu-visible=true"})
         )
 )
 (deflisten mic_vol :initial 80
         "tail -F $HOME/.local/tmp/mic.pipe"
 )
+(defpoll pwsources :interval "5s" :initial "[]"
+        "pwdevices source"
+)
+(defvar source-menu-visible false)
+(defwidget source-menu []
+        (box :orientation "v" :class "audio-menu" :visible source-menu-visible
+                (for dev in pwsources
+                        (button
+                                :onclick "wpctl set-default ${dev.id}"
+                                :class {dev.default ? "audio-device audio-device-default" : "audio-device"}
+                                "󰍬 ${dev.name}"
+                        )
+                )
+        )
+)
+(defwindow source-menu-window []
+        :monitor 0
+        :geometry (geometry :width "300px" :anchor "top right")
+        :stacking "fg"
+
+        (source-menu)
+)
 (defwidget _mic []
         (box :class "mic" :orientation "h" :halign "end" :space-evenly false
-                (metric :label "󰍬 " :value mic_vol :onchange "setvol source {}%" :onclick "easyeffects")
+                (metric :label "󰍬 " :value mic_vol :onchange "setvol source {}%"
+                        :onclick {source-menu-visible ? "${EWW_CMD} close source-menu-window && ${EWW_CMD} update source-menu-visible=false" : "${EWW_CMD} open source-menu-window && ${EWW_CMD} update source-menu-visible=true"})
         )
 )
 
@@ -96,6 +142,41 @@
         )
 )
 
+(defpoll btdevices :interval "3s" :initial "[]"
+        "btstate"
+)
+(defpoll btconnected :interval "3s" :initial false
+        "[ -n \"$(bluetoothctl devices Connected 2>/dev/null)\" ] && echo true || echo false"
+)
+
+(defvar bt-menu-visible false)
+
+(defwidget bt-menu []
+        (box :orientation "v" :class "bt-menu" :visible bt-menu-visible
+                (for dev in btdevices
+                        (button
+                                :onclick "btctl ${dev.mac}"
+                                :class {dev.connected ? "bt-device bt-device-connected" : "bt-device"}
+                                "${dev.connected ? '󰂱' : '󰂯'} ${dev.name}"
+                        )
+                )
+        )
+)
+(defwidget _bt-button []
+        (button
+                :onclick {bt-menu-visible ? "${EWW_CMD} close bt-menu-window && ${EWW_CMD} update bt-menu-visible=false" : "${EWW_CMD} open bt-menu-window && ${EWW_CMD} update bt-menu-visible=true"}
+                :class "bt-main-button"
+                {btconnected ? "󰂱" : "󰂯"}
+        )
+)
+(defwindow bt-menu-window []
+        :monitor 0
+        :geometry (geometry :width "250px" :anchor "top right")
+        :stacking "fg"
+
+        (bt-menu)
+)
+
 (defvar power-menu-visible false)
 
 (defwidget power-menu []
@@ -136,6 +217,7 @@
                         (_sink)
                         (_clock)
                         (_systray)
+                        (_bt-button)
                         (_power-button)
                 )
         )

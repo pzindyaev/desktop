@@ -1,0 +1,10 @@
+#!/bin/bash
+
+mac="$1"
+[ -z "$mac" ] && exit 1
+
+if bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes"; then
+    bluetoothctl disconnect "$mac"
+else
+    bluetoothctl connect "$mac"
+fi

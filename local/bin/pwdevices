@@ -1,0 +1,39 @@
+#!/usr/bin/python3
+
+import subprocess
+import json
+import sys
+
+media_class = "Audio/Source" if (len(sys.argv) > 1 and sys.argv[1] == "source") else "Audio/Sink"
+
+try:
+    pw_data = json.loads(subprocess.run(["pw-dump"], check=True, capture_output=True).stdout)
+except Exception:
+    print("[]")
+    sys.exit(0)
+
+try:
+    pactl_info = subprocess.run(["pactl", "info"], capture_output=True, text=True).stdout
+    default_key = "Default Sink: " if media_class == "Audio/Sink" else "Default Source: "
+    default_name = next(
+        (line[len(default_key):].strip() for line in pactl_info.splitlines() if line.startswith(default_key)),
+        ""
+    )
+except Exception:
+    default_name = ""
+
+devices = []
+for item in pw_data:
+    if (item.get("type") == "PipeWire:Interface:Node"
+            and "info" in item
+            and "props" in item["info"]
+            and item["info"]["props"].get("media.class") == media_class):
+        props = item["info"]["props"]
+        node_name = props.get("node.name", "")
+        devices.append({
+            "id": item["id"],
+            "name": props.get("node.description", node_name),
+            "default": node_name == default_name,
+        })
+
+print(json.dumps(devices))

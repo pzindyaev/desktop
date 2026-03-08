@@ -1,0 +1,29 @@
+#!/bin/bash
+
+devices="["
+first=true
+
+while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    mac=$(echo "$line" | awk '{print $2}')
+    name=$(echo "$line" | cut -d' ' -f3-)
+    [ -z "$mac" ] && continue
+
+    if bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes"; then
+        connected=true
+    else
+        connected=false
+    fi
+
+    name=$(echo "$name" | sed 's/\\/\\\\/g; s/"/\\"/g')
+
+    if [ "$first" = true ]; then
+        first=false
+    else
+        devices="${devices},"
+    fi
+    devices="${devices}{\"name\":\"${name}\",\"mac\":\"${mac}\",\"connected\":${connected}}"
+done < <(bluetoothctl devices 2>/dev/null)
+
+devices="${devices}]"
+printf '%s\n' "$devices"

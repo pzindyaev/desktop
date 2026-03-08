@@ -30,6 +30,59 @@
         }
 }
 
+.audio-menu {
+        background: #2f343f;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #4c566a;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.audio-device {
+        margin: 5px 0;
+        padding: 8px 15px;
+        border-radius: 4px;
+        background: #434c5e;
+        min-width: 280px;
+}
+
+.audio-device-default {
+        color: #88c0d0;
+}
+
+.audio-device:hover {
+        background: #4c566a;
+}
+
+.bt-main-button {
+        font-size: 24px;
+        padding: 0 10px;
+}
+
+.bt-menu {
+        background: #2f343f;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #4c566a;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.bt-device {
+        margin: 5px 0;
+        padding: 8px 15px;
+        border-radius: 4px;
+        background: #434c5e;
+        min-width: 230px;
+}
+
+.bt-device-connected {
+        color: #a3be8c;
+}
+
+.bt-device:hover {
+        background: #4c566a;
+}
+
 .power-main-button {
         font-size: 24px;
         padding: 0 10px;
