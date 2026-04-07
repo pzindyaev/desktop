@@ -17,7 +17,7 @@
                         background-color: #4e4e4e;
                         border-radius: 50px;
                         min-height: 3px;
-                        min-width: 50px;
+                        min-width: 100px;
                         margin-left: 10px;
                         margin-right: 20px;
                         highlight {
@@ -114,4 +114,67 @@
 
 .power-button:hover {
         background: #4c566a;
+}
+
+.notif-bell-button {
+        font-size: 24px;
+        padding: 0 10px;
+}
+
+.notif-sidebar {
+        background: #2f343f;
+        min-height: 100%;
+        padding: 10px;
+        border: 1px solid #4c566a;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.notif-pause-btn, .notif-clear-btn {
+        margin: 5px 0;
+        padding: 8px 10px;
+        border-radius: 4px;
+        background: #434c5e;
+}
+
+.notif-pause-btn:hover, .notif-clear-btn:hover {
+        background: #4c566a;
+}
+
+.notif-item {
+        margin: 5px 0;
+        padding: 8px 15px;
+        border-radius: 4px;
+        background: #434c5e;
+        border-left: 3px solid #4c566a;
+}
+
+.notif-item.notif-normal {
+        border-left-color: #88c0d0;
+}
+
+.notif-item.notif-critical {
+        border-left-color: #bf616a;
+}
+
+.notif-item-header {
+        margin-bottom: 4px;
+}
+
+.notif-app {
+        color: #88c0d0;
+}
+
+.notif-rm-btn {
+        padding: 0 4px;
+        border-radius: 4px;
+        background: transparent;
+}
+
+.notif-rm-btn:hover {
+        background: #4c566a;
+}
+
+.notif-body {
+        color: #b0b4bc;
+        margin-top: 3px;
 }

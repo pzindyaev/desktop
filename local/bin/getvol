@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 
-volume_pipe="${HOME}/.local/tmp/volume.pipe"
-vol=$(bc <<< "scale=2; $(wpctl get-volume @DEFAULT_SINK@ | awk '{print $2}') * 100")
+device="@DEFAULT_AUDIO_SINK@"
 
-if [[ "${1}" == "print" ]]; then
-        echo "${vol}"
-        exit 0
+if [[ "${1}" == "sink" ]]; then
+        device="@DEFAULT_AUDIO_SINK@"
+        volume_pipe="$HOME/.local/tmp/volume.pipe"
 fi
+if [[ "${1}" == "source" ]]; then
+        device="@DEFAULT_AUDIO_SOURCE@"
+        volume_pipe="$HOME/.local/tmp/mic.pipe"
+fi
+
+vol=$(bc <<< "scale=2; $(wpctl get-volume ${device} | awk '{print $2}') * 100")
+
 
 if [ ! -e "${volume_pipe}" ]; then
         mkfifo "${volume_pipe}"
 fi
 
-echo "${vol}" > "${volume_pipe}"
+echo "${vol}"
+

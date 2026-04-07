@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import json, subprocess, sys
+
+try:
+    result = subprocess.run(['dunstctl', 'history'], capture_output=True, text=True, timeout=3)
+    data = json.loads(result.stdout)
+except Exception:
+    print('[]')
+    sys.exit(0)
+
+notifications = []
+for notif_list in data.get('data', []):
+    if not notif_list:
+        continue
+    n = notif_list[0]
+    body = n.get('body', {}).get('data', '')
+    notifications.append({
+        'id':      n.get('id', {}).get('data', 0),
+        'appname': n.get('appname', {}).get('data', ''),
+        'summary': n.get('summary', {}).get('data', ''),
+        'body':    body,
+        'urgency': n.get('urgency', {}).get('data', 'NORMAL').lower(),
+    })
+
+print(json.dumps(notifications))

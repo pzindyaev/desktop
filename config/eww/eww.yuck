@@ -12,7 +12,7 @@
                 (eventbox :onclick onclick :timeout "10s"
                         (box :class "label" label)
                 )
-                (scale :min 0 :max 100 :round-digits 2 :active {onchange != ""} :value value :onchange onchange)
+                (scale :min 0 :max 100 :round-digits 2 :active {onchange != ""} :value value :onchange onchange :width 100)
         )
 )
 
@@ -22,9 +22,8 @@
 (defpoll pwsinks :interval "5s" :initial "[]"
         "pwdevices sink"
 )
-(defvar sink-menu-visible false)
 (defwidget sink-menu []
-        (box :orientation "v" :class "audio-menu" :visible sink-menu-visible
+        (box :orientation "v" :class "audio-menu"
                 (for dev in pwsinks
                         (button
                                 :onclick "wpctl set-default ${dev.id}"
@@ -44,7 +43,7 @@
 (defwidget _sink []
         (box :class "sink" :orientation "h" :halign "end" :space-evenly false
                 (metric :label "󰕾 " :value volume :onchange "setvol sink {}%"
-                        :onclick {sink-menu-visible ? "${EWW_CMD} close sink-menu-window && ${EWW_CMD} update sink-menu-visible=false" : "${EWW_CMD} open sink-menu-window && ${EWW_CMD} update sink-menu-visible=true"})
+                        :onclick "${EWW_CMD} open --toggle sink-menu-window")
         )
 )
 (deflisten mic_vol :initial 80
@@ -53,9 +52,8 @@
 (defpoll pwsources :interval "5s" :initial "[]"
         "pwdevices source"
 )
-(defvar source-menu-visible false)
 (defwidget source-menu []
-        (box :orientation "v" :class "audio-menu" :visible source-menu-visible
+        (box :orientation "v" :class "audio-menu"
                 (for dev in pwsources
                         (button
                                 :onclick "wpctl set-default ${dev.id}"
@@ -75,7 +73,7 @@
 (defwidget _mic []
         (box :class "mic" :orientation "h" :halign "end" :space-evenly false
                 (metric :label "󰍬 " :value mic_vol :onchange "setvol source {}%"
-                        :onclick {source-menu-visible ? "${EWW_CMD} close source-menu-window && ${EWW_CMD} update source-menu-visible=false" : "${EWW_CMD} open source-menu-window && ${EWW_CMD} update source-menu-visible=true"})
+                        :onclick "${EWW_CMD} open --toggle source-menu-window")
         )
 )
 
@@ -149,10 +147,8 @@
         "[ -n \"$(bluetoothctl devices Connected 2>/dev/null)\" ] && echo true || echo false"
 )
 
-(defvar bt-menu-visible false)
-
 (defwidget bt-menu []
-        (box :orientation "v" :class "bt-menu" :visible bt-menu-visible
+        (box :orientation "v" :class "bt-menu"
                 (for dev in btdevices
                         (button
                                 :onclick "btctl ${dev.mac}"
@@ -164,7 +160,7 @@
 )
 (defwidget _bt-button []
         (button
-                :onclick {bt-menu-visible ? "${EWW_CMD} close bt-menu-window && ${EWW_CMD} update bt-menu-visible=false" : "${EWW_CMD} open bt-menu-window && ${EWW_CMD} update bt-menu-visible=true"}
+                :onclick "${EWW_CMD} open --toggle bt-menu-window"
                 :class "bt-main-button"
                 {btconnected ? "󰂱" : "󰂯"}
         )
@@ -177,16 +173,67 @@
         (bt-menu)
 )
 
-(defvar power-menu-visible false)
+(defpoll notif-history :interval "3s" :initial "[]"
+        "dunst-history"
+)
+(defpoll notif-paused :interval "3s" :initial false
+        "dunstctl is-paused"
+)
+(defwidget _notif-item [n]
+        (box :orientation "v" :class "notif-item notif-${n.urgency}" :space-evenly false
+                (box :orientation "h" :space-evenly false :class "notif-item-header"
+                        (label :class "notif-app" :text "${n.appname}" :halign "start" :hexpand true :limit-width 25)
+                        (button :class "notif-rm-btn" :onclick "dunstctl history-rm ${n.id}" "")
+                )
+                (label :class "notif-summary" :text "${n.summary}" :halign "start" :wrap true)
+                (label :class "notif-body" :text "${n.body}" :halign "start" :wrap true :visible {n.body != "" && n.body != n.summary})
+        )
+)
+
+(defwidget notif-sidebar []
+        (box :orientation "v" :class "notif-sidebar" :space-evenly false
+                (box :orientation "h" :class "notif-sidebar-header" :space-evenly false
+                        (label :class "notif-sidebar-title" :text "Notifications" :halign "start" :hexpand true)
+                        (button :class "notif-pause-btn"
+                                :onclick "dunstctl set-paused toggle"
+                                {notif-paused ? "󰂛" : "󰂚"})
+                        (button :class "notif-clear-btn" :onclick "dunstctl history-clear" "󰆴")
+                )
+                (scroll :vexpand true :vscroll true :class "notif-scroll"
+                        (box :orientation "v" :space-evenly false :class "notif-list"
+                                (for n in notif-history
+                                        (_notif-item :n n)
+                                )
+                        )
+                )
+        )
+)
+
+(defwindow notif-sidebar-window []
+        :monitor 0
+        :geometry (geometry :width "340px" :height "100%" :anchor "top right")
+        :stacking "fg"
+        :exclusive false
+
+        (notif-sidebar)
+)
+
+(defwidget _notif-bell []
+        (button
+                :onclick "${EWW_CMD} open --toggle notif-sidebar-window"
+                :class "notif-bell-button"
+                "󰂚"
+        )
+)
 
 (defwidget power-menu []
-        (box :orientation "v" :class "power-menu" :visible power-menu-visible
+        (box :orientation "v" :class "power-menu"
                 (button :onclick "systemctl poweroff" :class "power-button" "󰐥 Shutdown")
                 (button :onclick "systemctl reboot" :class "power-button" "󰜉 Reboot")
         )
 )
 (defwidget _power-button []
-        (button :onclick {power-menu-visible ? "${EWW_CMD} close power-menu-window && ${EWW_CMD} update power-menu-visible=false" : "${EWW_CMD} open power-menu-window && ${EWW_CMD} update power-menu-visible=true"} :class "power-main-button" "󰐥")
+        (button :onclick "${EWW_CMD} open --toggle power-menu-window" :class "power-main-button" "󰐥")
 )
 (defwindow power-menu-window []
         :monitor 0
@@ -212,12 +259,12 @@
                 )
                 (box :halign "end" :space-evenly false :visible {mon == 0 ? true : false }
                         (_battery)
-                        (_netstate)
                         (_mic)
                         (_sink)
                         (_clock)
                         (_systray)
                         (_bt-button)
+                        (_notif-bell)
                         (_power-button)
                 )
         )
