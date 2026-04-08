@@ -1,0 +1,170 @@
+/* Waybar style — Nord-inspired, ported from eww.scss */
+
+/* ── Variables (via CSS custom properties) ─────────────────────────── */
+* {
+    font-family: monospace, "Font Awesome 6 Free";
+    font-size: 15px;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* ── Bar ────────────────────────────────────────────────────────────── */
+window#waybar {
+    background-color: #2f343f;
+    color: #b0b4bc;
+}
+
+/* ── Workspaces ─────────────────────────────────────────────────────── */
+#workspaces {
+    margin-right: 8px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    color: #b0b4bc;
+    background-color: transparent;
+}
+
+#workspaces button:hover {
+    background-color: #4c566a;
+}
+
+#workspaces button.active {
+    color: #88c0d0;
+    background-color: #434c5e;
+}
+
+/* ── Window title ───────────────────────────────────────────────────── */
+#window {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+/* ── Music (mpris) ──────────────────────────────────────────────────── */
+#mpris {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+/* ── Battery ────────────────────────────────────────────────────────── */
+#battery {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#battery.warning {
+    color: #ebcb8b;
+}
+
+#battery.critical {
+    color: #bf616a;
+}
+
+/* ── Mic (pulseaudio source) ────────────────────────────────────────── */
+#wireplumber.source {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#wireplumber.source.muted {
+    color: #4c566a;
+}
+
+/* ── Sink / Speaker (wireplumber) ───────────────────────────────────── */
+#wireplumber {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#wireplumber.muted {
+    color: #4c566a;
+}
+
+/* ── Clock ──────────────────────────────────────────────────────────── */
+#clock {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+/* ── System tray ────────────────────────────────────────────────────── */
+#tray {
+    padding: 0 5px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #bf616a;
+}
+
+/* ── Network ────────────────────────────────────────────────────────── */
+#network {
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#network.disconnected {
+    color: #4c566a;
+}
+
+/* ── Bluetooth ──────────────────────────────────────────────────────── */
+#bluetooth {
+    font-size: 20px;
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#bluetooth.connected {
+    color: #a3be8c;
+}
+
+#bluetooth:hover {
+    background-color: #434c5e;
+}
+
+/* ── Notification bell ──────────────────────────────────────────────── */
+#custom-notif {
+    font-size: 20px;
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#custom-notif.muted {
+    color: #4c566a;
+}
+
+#custom-notif:hover {
+    background-color: #434c5e;
+}
+
+/* ── Power button ───────────────────────────────────────────────────── */
+#custom-power {
+    font-size: 20px;
+    padding: 0 10px;
+    color: #b0b4bc;
+}
+
+#custom-power:hover {
+    background-color: #434c5e;
+}
+
+/* ── Tooltip ────────────────────────────────────────────────────────── */
+tooltip {
+    background-color: #2f343f;
+    border: 1px solid #4c566a;
+    border-radius: 8px;
+    color: #b0b4bc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+tooltip label {
+    color: #b0b4bc;
+    padding: 4px 8px;
+}

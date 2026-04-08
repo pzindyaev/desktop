@@ -1,0 +1,187 @@
+// Waybar config mirroring eww bar layout:
+// Left: workspaces + window title
+// Center: music (primary monitor only)
+// Right: battery + mic + sink + clock + tray + network + bluetooth + notifications + power (primary only)
+//
+// Run `hyprctl monitors` to get your monitor names and adjust "output" fields below.
+[
+    {
+        // Primary monitor — all modules visible
+        // Change "eDP-1" to your primary monitor name
+        "output": "DP-1",
+        "layer": "top",
+        "position": "top",
+        "height": 30,
+        "spacing": 0,
+        "margin-top": 0,
+        "margin-bottom": 0,
+
+        "modules-left": [
+            "hyprland/workspaces",
+            "hyprland/window"
+        ],
+        "modules-center": [
+            "mpris"
+        ],
+        "modules-right": [
+            "battery",
+            "wireplumber#source",
+            "wireplumber",
+            "clock",
+            "tray",
+            "network",
+            "bluetooth",
+            "custom/notif",
+            "custom/power"
+        ],
+
+        "hyprland/workspaces": {
+            "format": "{name}",
+            "on-click": "activate",
+            "sort-by-number": true,
+            "active-only": false
+        },
+
+        "hyprland/window": {
+            "max-length": 50,
+            "format": "{}"
+        },
+
+        "mpris": {
+            "format": "󰎇 {artist} - {title}",
+            "format-paused": "",
+            "format-stopped": "",
+            "max-length": 50,
+            "interval": 1,
+            "tooltip": false
+        },
+
+        "battery": {
+            "format": "  {capacity}%",
+            "format-charging": "  {capacity}%",
+            "format-plugged": "  {capacity}%",
+            "tooltip-format": "{timeTo}, {capacity}%",
+            "states": {
+                "warning": 30,
+                "critical": 15
+            }
+        },
+
+        // Microphone / source
+        "wireplumber#source": {
+            "node-type": "Audio/Source",
+            "format": "󰍬 {volume}%",
+            "format-muted": "󰍭 muted",
+            "on-click": "~/.config/waybar/scripts/source-select.sh",
+            "on-scroll-up": "setvol source 5%+",
+            "on-scroll-down": "setvol source 5%-",
+            "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        },
+
+        // Speaker / sink (PipeWire via wireplumber)
+        "wireplumber": {
+            "format": "󰕾 {volume}%",
+            "format-muted": "󰖁 muted",
+            "on-click": "~/.config/waybar/scripts/sink-select.sh",
+            "on-scroll-up": "setvol sink 5%+",
+            "on-scroll-down": "setvol sink 5%-",
+            "tooltip-format": "{node_name}",
+            "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        },
+
+        "clock": {
+            "format": "{:%H:%M %b %d, %Y }",
+            "tooltip-format": "<tt><small>{calendar}</small></tt>",
+            "calendar": {
+                "mode"          : "month",
+                "mode-mon-col"  : 3,
+                "weeks-pos"     : "right",
+                "on-scroll"     : 1,
+                "format": {
+                    "months":     "<span color='#ffead3'><b>{}</b></span>",
+                    "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+                    "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+                    "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+                    "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+                }
+            },
+            "actions":  {
+                "on-click-right": "mode",
+                "on-scroll-up": "tz_up",
+                "on-scroll-down": "tz_down",
+                "on-scroll-up": "shift_up",
+                "on-scroll-down": "shift_down"
+            }
+        },
+
+        "tray": {
+            "spacing": 5,
+            "icon-size": 16
+        },
+
+        "network": {
+            "format": "󰈀",
+            "format-wifi": "󰤨",
+            "format-ethernet": "󰈀",
+            "format-disconnected": "󰤭",
+            "tooltip-format": "{ifname}",
+            "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}",
+            "tooltip-format-ethernet": "{ifname}\n{ipaddr}\n↓{bandwidthDownBytes} ↑{bandwidthUpBytes}",
+            "tooltip-format-disconnected": "Disconnected",
+            "interval": 5
+        },
+
+        "bluetooth": {
+            "format": "󰂯",
+            "format-connected": "󰂱",
+            "on-click": "~/.config/waybar/scripts/bt-toggle.sh",
+            "tooltip-format": "Bluetooth: {status}",
+            "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+            "tooltip-format-enumerate-connected": "  {device_alias}"
+        },
+
+        "custom/notif": {
+            "format": "{}",
+            "exec": "~/.config/waybar/scripts/notif-status.sh",
+            "return-type": "json",
+            "interval": 3,
+            "on-click": "dunstctl set-paused toggle",
+            "on-click-right": "dunstctl history-clear",
+            "on-click-middle": "~/.config/waybar/scripts/notif-history.sh"
+        },
+
+        "custom/power": {
+            "format": "󰐥",
+            "on-click": "~/.config/waybar/scripts/power-menu.sh",
+            "tooltip": false
+        }
+    },
+    {
+        // Secondary monitors — workspaces and window title only
+        // "!eDP-1" means all monitors except eDP-1
+        "output": "!DP-1",
+        "layer": "top",
+        "position": "top",
+        "height": 30,
+        "spacing": 0,
+
+        "modules-left": [
+            "hyprland/workspaces",
+            "hyprland/window"
+        ],
+        "modules-center": [],
+        "modules-right": [],
+
+        "hyprland/workspaces": {
+            "format": "{name}",
+            "on-click": "activate",
+            "sort-by-number": true,
+            "active-only": false
+        },
+
+        "hyprland/window": {
+            "max-length": 50,
+            "format": "{}"
+        }
+    }
+]

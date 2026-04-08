@@ -31,7 +31,7 @@
 }
 
 .audio-menu {
-        background: #2f343f;
+        background-color: #2f343f;
         border-radius: 8px;
         padding: 10px;
         border: 1px solid #4c566a;
@@ -42,7 +42,7 @@
         margin: 5px 0;
         padding: 8px 15px;
         border-radius: 4px;
-        background: #434c5e;
+        background-color: #434c5e;
         min-width: 280px;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .audio-device:hover {
-        background: #4c566a;
+        background-color: #4c566a;
 }
 
 .bt-main-button {
@@ -60,7 +60,7 @@
 }
 
 .bt-menu {
-        background: #2f343f;
+        background-color: #2f343f;
         border-radius: 8px;
         padding: 10px;
         border: 1px solid #4c566a;
@@ -71,7 +71,7 @@
         margin: 5px 0;
         padding: 8px 15px;
         border-radius: 4px;
-        background: #434c5e;
+        background-color: #434c5e;
         min-width: 230px;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .bt-device:hover {
-        background: #4c566a;
+        background-color: #4c566a;
 }
 
 .power-main-button {
@@ -89,7 +89,7 @@
 }
 
 .power-menu {
-        background: #2f343f;
+        background-color: #2f343f;
         border-radius: 8px;
         padding: 10px;
         border: 1px solid #4c566a;
@@ -100,7 +100,7 @@
         margin: 5px 0;
         padding: 8px 15px;
         border-radius: 4px;
-        background: #434c5e;
+        background-color: #434c5e;
         min-width: 180px;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .power-button:hover {
-        background: #4c566a;
+        background-color: #4c566a;
 }
 
 .notif-bell-button {
@@ -122,7 +122,7 @@
 }
 
 .notif-sidebar {
-        background: #2f343f;
+        background-color: #2f343f;
         min-height: 100%;
         padding: 10px;
         border: 1px solid #4c566a;
@@ -133,27 +133,33 @@
         margin: 5px 0;
         padding: 8px 10px;
         border-radius: 4px;
-        background: #434c5e;
+        background-color: #434c5e;
 }
 
 .notif-pause-btn:hover, .notif-clear-btn:hover {
-        background: #4c566a;
+        background-color: #4c566a;
 }
 
 .notif-item {
         margin: 5px 0;
         padding: 8px 15px;
         border-radius: 4px;
-        background: #434c5e;
-        border-left: 3px solid #4c566a;
+        background-color: #434c5e;
+        border-left-width: 3px;
+        border-left-style: solid;
+        border-left-color: #4c566a;
 }
 
 .notif-item.notif-normal {
         border-left-color: #88c0d0;
+        border-left-width: 3px;
+        border-left-style: solid;
 }
 
 .notif-item.notif-critical {
         border-left-color: #bf616a;
+        border-left-width: 3px;
+        border-left-style: solid;
 }
 
 .notif-item-header {
@@ -167,11 +173,11 @@
 .notif-rm-btn {
         padding: 0 4px;
         border-radius: 4px;
-        background: transparent;
+        background-color: transparent;
 }
 
 .notif-rm-btn:hover {
-        background: #4c566a;
+        background-color: #4c566a;
 }
 
 .notif-body {
