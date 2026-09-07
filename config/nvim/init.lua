@@ -97,6 +97,7 @@ require('lazy').setup({
     dependencies = {
       { "mason-org/mason.nvim", opts = {} },
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+      'saghen/blink.lib',
       'saghen/blink.cmp',
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
@@ -283,6 +284,7 @@ require('lazy').setup({
             clangd = {},
             gopls = {},
             pyright = {},
+            -- jdtls = {},
             -- rust_analyzer = {},
             -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
             --
@@ -441,7 +443,7 @@ require('lazy').setup({
   -- Fuzzy Finder (files, lsp, etc)
   {
     'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
+    branch = 'master',
     dependencies = {
       'nvim-lua/plenary.nvim',
       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
@@ -462,10 +464,14 @@ require('lazy').setup({
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
+    lazy = false,
   },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
@@ -591,7 +597,6 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
 
-vim.keymap.set('n', '<leader><S-e>t', 'yy:term <C-r>"<CR>', { desc = '[E]xecute the line in the [T]erminal' })
 
 vim.keymap.set('n', '<leader><S-t>n', ':tabnew<CR>', { desc = '[T]ab [N]ew' })
 vim.keymap.set('n', '<leader><S-t>c', ':tabclose<CR>', { desc = '[T]ab [C]lose' })
@@ -601,76 +606,157 @@ vim.keymap.set('n', '<leader><S-t>l', ':tabnext<CR>', { desc = '[T]ab Next' })
 -- [[ Configure Autoformat ]]
 
 -- [[ Configure Treesitter ]]
--- See `:help nvim-treesitter`
+-- See `:help nvim-treesitter` (main branch API)
 -- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
 vim.defer_fn(function()
-  require('nvim-treesitter.configs').setup {
-    -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'go', 'lua', 'python', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
+  local ts = require 'nvim-treesitter'
+  ts.setup {}
 
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = true,
-    sync_install = false,
-    ignore_install = {},
+  -- Languages to install. markdown_inline is required for markdown highlighting.
+  local ensure_installed = {
+    'c', 'go', 'lua', 'python', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash',
+    'markdown', 'markdown_inline', 'query',
+  }
+  local installed = ts.get_installed()
+  local missing = vim.tbl_filter(function(lang)
+    return not vim.tbl_contains(installed, lang)
+  end, ensure_installed)
+  if #missing > 0 then
+    ts.install(missing)
+  end
 
-    modules = {},
+  -- Enable highlighting and indentation per buffer; auto-install missing parsers
+  local function attach(buf, filetype)
+    local lang = vim.treesitter.language.get_lang(filetype)
+    if not lang then
+      return
+    end
 
-    highlight = { enable = true },
-    indent = { enable = true },
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = '<c-space>',
-        node_incremental = '<c-space>',
-        scope_incremental = '<c-s>',
-        node_decremental = '<M-space>',
-      },
+    local function start()
+      if not vim.api.nvim_buf_is_valid(buf) then
+        return
+      end
+      if not pcall(vim.treesitter.start, buf, lang) then
+        return
+      end
+      vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+
+    if vim.tbl_contains(ts.get_installed(), lang) then
+      start()
+    elseif vim.tbl_contains(ts.get_available(), lang) then
+      ts.install({ lang }):await(start)
+    end
+  end
+
+  vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+    callback = function(args)
+      attach(args.buf, args.match)
+    end,
+  })
+
+  -- Buffers opened before this deferred setup ran (e.g. `nvim file.md`) already
+  -- fired FileType, so attach to them now.
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype ~= '' then
+      attach(buf, vim.bo[buf].filetype)
+    end
+  end
+
+  -- Treesitter textobjects (main branch API)
+  require('nvim-treesitter-textobjects').setup {
+    select = {
+      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
     },
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-        keymaps = {
-          -- You can use the capture groups defined in textobjects.scm
-          ['aa'] = '@parameter.outer',
-          ['ia'] = '@parameter.inner',
-          ['af'] = '@function.outer',
-          ['if'] = '@function.inner',
-          ['ac'] = '@class.outer',
-          ['ic'] = '@class.inner',
-        },
-      },
-      move = {
-        enable = true,
-        set_jumps = true, -- whether to set jumps in the jumplist
-        goto_next_start = {
-          [']m'] = '@function.outer',
-          [']]'] = '@class.outer',
-        },
-        goto_next_end = {
-          [']M'] = '@function.outer',
-          [']['] = '@class.outer',
-        },
-        goto_previous_start = {
-          ['[m'] = '@function.outer',
-          ['[['] = '@class.outer',
-        },
-        goto_previous_end = {
-          ['[M'] = '@function.outer',
-          ['[]'] = '@class.outer',
-        },
-      },
-      swap = {
-        enable = true,
-        swap_next = {
-          ['<leader>a'] = '@parameter.inner',
-        },
-        swap_previous = {
-          ['<leader>A'] = '@parameter.inner',
-        },
-      },
+    move = {
+      set_jumps = true, -- whether to set jumps in the jumplist
     },
   }
+
+  local select = require 'nvim-treesitter-textobjects.select'
+  local move = require 'nvim-treesitter-textobjects.move'
+  local swap = require 'nvim-treesitter-textobjects.swap'
+
+  local function map_select(lhs, capture, desc)
+    vim.keymap.set({ 'x', 'o' }, lhs, function()
+      select.select_textobject(capture, 'textobjects')
+    end, { desc = desc })
+  end
+  map_select('aa', '@parameter.outer', 'Select outer parameter')
+  map_select('ia', '@parameter.inner', 'Select inner parameter')
+  map_select('af', '@function.outer', 'Select outer function')
+  map_select('if', '@function.inner', 'Select inner function')
+  map_select('ac', '@class.outer', 'Select outer class')
+  map_select('ic', '@class.inner', 'Select inner class')
+
+  local function map_move(lhs, fn, capture, desc)
+    vim.keymap.set({ 'n', 'x', 'o' }, lhs, function()
+      fn(capture, 'textobjects')
+    end, { desc = desc })
+  end
+  map_move(']m', move.goto_next_start, '@function.outer', 'Next function start')
+  map_move(']]', move.goto_next_start, '@class.outer', 'Next class start')
+  map_move(']M', move.goto_next_end, '@function.outer', 'Next function end')
+  map_move('][', move.goto_next_end, '@class.outer', 'Next class end')
+  map_move('[m', move.goto_previous_start, '@function.outer', 'Previous function start')
+  map_move('[[', move.goto_previous_start, '@class.outer', 'Previous class start')
+  map_move('[M', move.goto_previous_end, '@function.outer', 'Previous function end')
+  map_move('[]', move.goto_previous_end, '@class.outer', 'Previous class end')
+
+  vim.keymap.set('n', '<leader>a', function()
+    swap.swap_next '@parameter.inner'
+  end, { desc = 'Swap with next parameter' })
+  vim.keymap.set('n', '<leader>A', function()
+    swap.swap_previous '@parameter.inner'
+  end, { desc = 'Swap with previous parameter' })
+
+  -- Incremental selection was removed from the main branch; use a simple node-based
+  -- expansion instead. <C-Space> grows the selection, <M-Space> shrinks it.
+  local sel_stack = {}
+  vim.keymap.set({ 'n', 'x' }, '<c-space>', function()
+    local buf = vim.api.nvim_get_current_buf()
+    local mode = vim.fn.mode()
+    local node
+    if mode == 'n' then
+      sel_stack = {}
+      node = vim.treesitter.get_node()
+    else
+      local top = sel_stack[#sel_stack]
+      node = top and top:parent() or vim.treesitter.get_node()
+    end
+    if not node then
+      return
+    end
+    table.insert(sel_stack, node)
+    local sr, sc, er, ec = node:range()
+    vim.api.nvim_win_set_cursor(0, { sr + 1, sc })
+    if mode == 'n' then
+      vim.cmd 'normal! v'
+    else
+      vim.cmd 'normal! o'
+      vim.api.nvim_win_set_cursor(0, { sr + 1, sc })
+      vim.cmd 'normal! o'
+    end
+    local last_line = vim.api.nvim_buf_line_count(buf)
+    if er + 1 > last_line then
+      er, ec = last_line - 1, #vim.api.nvim_buf_get_lines(buf, last_line - 1, last_line, true)[1]
+    end
+    vim.api.nvim_win_set_cursor(0, { er + 1, math.max(ec - 1, 0) })
+    _ = buf
+  end, { desc = 'Treesitter: expand selection' })
+  vim.keymap.set('x', '<M-space>', function()
+    if #sel_stack <= 1 then
+      return
+    end
+    table.remove(sel_stack)
+    local node = sel_stack[#sel_stack]
+    local sr, sc, er, ec = node:range()
+    vim.cmd 'normal! o'
+    vim.api.nvim_win_set_cursor(0, { sr + 1, sc })
+    vim.cmd 'normal! o'
+    vim.api.nvim_win_set_cursor(0, { er + 1, math.max(ec - 1, 0) })
+  end, { desc = 'Treesitter: shrink selection' })
 end, 0)
 
 -- Diagnostic keymaps
@@ -703,25 +789,6 @@ require('which-key').add {
 }
 
 require('mason').setup()
-
-
--- Setup tabnine
-require('tabnine').setup({
-  disable_auto_comment=true,
-  accept_keymap="<A-Tab>",
-  dismiss_keymap = "<C-]>",
-  debounce_ms = 800,
-  suggestion_color = {gui = "#808080", cterm = 244},
-  exclude_filetypes = {"TelescopePrompt", "NvimTree"},
-  log_file_path = nil, -- absolute path to Tabnine log file
-  ignore_certificate_errors = false,
-  -- workspace_folders = {
-  --   paths = { "/your/project" },
-  --   get_paths = function()
-  --       return { "/your/project" }
-  --   end,
-  -- },
-})
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
