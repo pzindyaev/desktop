@@ -83,6 +83,8 @@ def main():
         result = subprocess.run(["adguardvpn-cli", "connect", "-l", city], capture_output=True, text=True)
         if result.returncode != 0:
             notify("VPN connection failed", f"Could not connect to {city}")
+        else:
+            notify("VPN connected", f"Connected to {city}")
 
 if __name__ == "__main__":
     main()
