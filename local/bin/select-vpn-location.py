@@ -39,39 +39,48 @@ def notify(summary, body=""):
     iface.Notify("select-vpn-location", 0, "network-vpn", summary, body, [], {}, 5000)
 
 def is_connected():
-    proc = subprocess.run(["vpn", "status"], capture_output=True, text=True)
+    proc = subprocess.run(["adguardvpn-cli", "status"], capture_output=True, text=True)
     return proc.stdout.startswith("Connected")
 
 def main():
     # Get list of VPN locations
     try:
-        proc = subprocess.run(["vpn", "list-locations"], check=True, capture_output=True, text=True)
+        proc = subprocess.run(["adguardvpn-cli", "list-locations"], check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
         print(f'vpn list-locations failed with error {e.returncode}: {e.stderr}')
         sys.exit(e.returncode)
 
     locations = parse_locations(proc.stdout)
 
-    # Build wofi menu: "city\tcountry — ping ms" so we display full info but key on city
+    # Build menu, keeping a map from the displayed line back to its city
+    # (omarchy-menu-select returns the line verbatim, so we can't key on a
+    # tab-separated prefix without breaking the menu layout)
     menu_lines = [DISCONNECT_LABEL] if is_connected() else []
+    line_to_city = {}
     for city, country, ping in locations:
-        menu_lines.append(f"{city}\t{country} — {ping}ms")
+        line = f"{city} {country} — {ping}ms"
+        menu_lines.append(line)
+        line_to_city[line] = city
 
-    wofi_input = "\n".join(menu_lines) + "\n"
+    menu_input = "\n".join(menu_lines) + "\n"
 
     try:
-        wofi_proc = subprocess.run(["wofi", "--show=dmenu"], check=True, text=True, input=wofi_input, capture_output=True)
+        menu_proc = subprocess.run(
+            ["omarchy", "menu", "select", "VPN Location", "--", "--width", "400"],
+            check=True, text=True, input=menu_input, capture_output=True,
+        )
     except subprocess.CalledProcessError as e:
         sys.exit(e.returncode)
 
-    selected = wofi_proc.stdout.strip()
+    selected = menu_proc.stdout.strip()
 
     if selected == DISCONNECT_LABEL:
-        subprocess.run(["vpn", "disconnect"])
+        subprocess.run(["adguardvpn-cli", "disconnect"])
     else:
-        # Extract city name (before the tab)
-        city = selected.split("\t")[0]
-        result = subprocess.run(["vpn", "connect", "-l", city], capture_output=True, text=True)
+        city = line_to_city.get(selected)
+        if city is None:
+            sys.exit(1)
+        result = subprocess.run(["adguardvpn-cli", "connect", "-l", city], capture_output=True, text=True)
         if result.returncode != 0:
             notify("VPN connection failed", f"Could not connect to {city}")
 
